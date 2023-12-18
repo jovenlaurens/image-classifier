@@ -1,5 +1,7 @@
 
 import torch
+import math
+
 from torch import nn
 from tqdm import tqdm
 from torchvision import transforms
@@ -9,6 +11,11 @@ import matplotlib.pyplot as plt
 
 class Model(nn.Module):
     def __init__(self):
+        """_summary_
+        Conv2d(x) = ((x - kernel_size + 2 * padding) / Stride) + 1 ) 
+        MaxPool2d(x) = ((x + 2 * padding - dilation kernel_size) / Stride) + 1
+        ConvTranspose2d(x) = (x - 1) * Stride - 2 * padding + kernel_size + output_padding
+        """
         super(Model, self).__init__()
 
         # Encoder
@@ -31,50 +38,13 @@ class Model(nn.Module):
             nn.Sigmoid()
         )
 
-        self.criterion = nn.MSELoss()
-
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3,
-                                          weight_decay=1e-8)
-
     def forward(self, x):
         x = self.encoder(x)
         # Apply the transform to each image in the batch
-
+        # print('encoder size: ', x.shape)
         x = self.decoder(x)
+        # print('decoder size: ', x.shape)
         return x
-
-    def train(self, x_train_augmented, x_train, batch_size, epochs):
-        train_loss = []
-
-        # Wrap your loop with tqdm to display a progress bar
-        for epoch in range(epochs):
-            for i in tqdm(range(0, len(x_train), batch_size), desc=f'Epoch {epoch+1}/{epochs}'):
-                batch_augmented = x_train_augmented[i:i+batch_size]
-                batch = x_train[i:i+batch_size]
-                # zero the parameter gradients
-                self.optimizer.zero_grad()
-
-                # forward + backward + optimize
-                output = self.forward(batch_augmented)
-                loss = self.criterion(output, batch)
-                loss.backward()
-                self.optimizer.step()
-            train_loss.append(loss.detach().numpy())
-            print(
-                f'Epoch {epoch+1}/{epochs}, Train Loss: {loss:.4f}')
-
-        # Defining the Plot Style
-        plt.figure()
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-
-        # Plotting the last 100 values
-        plt.plot(train_loss[-epochs:], label='Train Loss')
-        plt.title('Autoencoder Model Loss')
-        plt.legend()
-        plt.show()
-
-        print('Finished Training')
 
     def save(self, path):
         torch.save(self.state_dict(), path)
@@ -89,3 +59,7 @@ class Model(nn.Module):
 
     def summary(self):
         print(self)
+
+
+if __name__ == '__main__':
+    print(Model())
