@@ -21,3 +21,25 @@ The MNIST dataset is utilized for this project, and it can be foudn in the `data
 ## Usage
 
 The test code is available in `model_test.ipynb`. Ensure that you a have Jupyter Notebook environment set up.
+
+## Result
+
+### 10 Epochs
+
+#### Decoded image
+
+![](result/comparision_small.png)
+
+#### Clustering labels
+
+![](<result/clustering_small%20(acc%20=%200.42).png>)
+
+### 100 Epochs
+
+#### Decoded image
+
+![](result/comparision_medium.png)
+
+#### Clustering labels
+
+![](<result/clustering_medium%20(acc%20=%200.43).png>)
